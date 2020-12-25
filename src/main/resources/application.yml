@@ -1,0 +1,26 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /censo-api
+
+spring:
+  application:
+    name: censo-api
+  datasource:
+    url: jdbc:h2:mem:censodb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+    properties:
+      hibernate:
+        generate_statistics: false
+        jdbc:
+          batch_size: 10
+  h2:
+    console:
+      enabled: true
+      path: /h2
+
