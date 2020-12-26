@@ -58,7 +58,9 @@ public class DataFilterService {
                     person.getAdress().contains(AddressAbbreviation.CALLE) ||
                     person.getAdress().contains(AddressAbbreviation.CALLE.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.AC) ||
-                    person.getAdress().contains(AddressAbbreviation.AC.toLowerCase())) {
+                    person.getAdress().contains(AddressAbbreviation.AC.toLowerCase()) ||
+                    person.getAdress().contains(AddressAbbreviation.DG) ||
+                    person.getAdress().contains(AddressAbbreviation.DG.toLowerCase())) {
                 // TODO: agregar validacion si contiene 31 y una letra lo elimina esto solo para calles, y agregar validacion de 12D para carreras
                 // formato a la dirección eliminando caracteres especiales y palabra "sur"
                 String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
@@ -69,15 +71,10 @@ public class DataFilterService {
                 String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
                 String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
                 if (adressArrayFormat[1].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
-                    String mainRoadNumber;
-                    String roadGeneratorNumber;
-                    if (adressArrayFormat[1].length() == 1) {
-                        mainRoadNumber = adressArrayFormat[1].substring(0, 1);
-                    } else {
-                        mainRoadNumber = adressArrayFormat[1].substring(0, 2); // extrae solo los dos numeros y quita las letras en caso de que vengan
-                    }
+                    String mainRoadNumber = validateMainRoadNumber(adressArrayFormat);
+                    String roadGeneratorNumber = validateRoadGeneratorNumber(adressArrayFormat);
                     if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
-                        roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                     //   roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
                         if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
                             personsFilter.add(person);
                         }
@@ -92,7 +89,9 @@ public class DataFilterService {
                     person.getAdress().contains(AddressAbbreviation.CARRERA) ||
                     person.getAdress().contains(AddressAbbreviation.CARRERA.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.AK) ||
-                    person.getAdress().contains(AddressAbbreviation.AK.toLowerCase())) {
+                    person.getAdress().contains(AddressAbbreviation.AK.toLowerCase()) ||
+                    person.getAdress().contains(AddressAbbreviation.TV) ||
+                    person.getAdress().contains(AddressAbbreviation.TV.toLowerCase())) {
                 // formato a la dirección eliminando caracteres especiales y palabra "sur"
                 String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
                 addressFormat = addressFormat.replaceAll("sur", "");
@@ -102,21 +101,15 @@ public class DataFilterService {
                 String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
                 String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
                 if (adressArrayFormat[1].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
-                    String mainRoadNumber;
-                    String roadGeneratorNumber;
-                    if (adressArrayFormat[1].length() == 1) {
-                        mainRoadNumber = adressArrayFormat[1].substring(0, 1);
-                    } else {
-                        //TODO: Validar aqui por que puede llegar un "4G" y va a fallar mas adelante. validar que sea numerico mejor.
-                        mainRoadNumber = adressArrayFormat[1].substring(0, 2); // extrae solo los dos numeros y quita las letras en caso de que vengan
-                    }
+                    String mainRoadNumber = validateMainRoadNumber(adressArrayFormat);
+                    String roadGeneratorNumber = validateRoadGeneratorNumber(adressArrayFormat);
                     if (Integer.parseInt(mainRoadNumber) >= 14 && Integer.parseInt(mainRoadNumber) <= 30) {  // valida el rango del territorio para calles
-                        roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                      //  roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
                         if (Integer.parseInt(roadGeneratorNumber) >= 22 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
                             personsFilter.add(person);
                         }
                     } else if (Integer.parseInt(mainRoadNumber) >= 12 && Integer.parseInt(mainRoadNumber) <= 30) {
-                        roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                       // roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
                         if (Integer.parseInt(roadGeneratorNumber) >= 27 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
                             personsFilter.add(person);
                         }
@@ -129,14 +122,50 @@ public class DataFilterService {
         return personsFilter;
     }
 
-    public boolean isnumeric(String string) {
+
+    public boolean isnumeric(char character) {
         try {
-            Integer.parseInt(string);
+            Integer.parseInt(String.valueOf(character));
             return true;
         } catch (NumberFormatException ex) {
             return false;
         }
     }
+
+
+    public String validateMainRoadNumber(String[] adressArrayFormat) {
+        String mainRoadNumber;
+        if (adressArrayFormat[1].length() == 1) {
+            mainRoadNumber = adressArrayFormat[1].substring(0, 1);
+        } else {
+            char charTwo = adressArrayFormat[1].charAt(1);
+            if (isnumeric(charTwo)) {
+                mainRoadNumber = adressArrayFormat[1].substring(0, 2); // extrae solo los dos numeros y quita las letras en caso de que vengan
+            } else {
+                mainRoadNumber = adressArrayFormat[1].substring(0, 1);
+            }
+
+        }
+        return mainRoadNumber;
+    }
+
+    public String validateRoadGeneratorNumber(String[] adressArrayFormat) {
+        String roadGeneratorNumber;
+        if (adressArrayFormat[2].length() == 1) {
+            roadGeneratorNumber = adressArrayFormat[2].substring(0, 1);
+        } else {
+            char charTwo = adressArrayFormat[2].charAt(1);
+            if (isnumeric(charTwo)) {
+                roadGeneratorNumber = adressArrayFormat[2].substring(0, 2); // extrae solo los dos numeros y quita las letras en caso de que vengan
+            } else {
+                roadGeneratorNumber = adressArrayFormat[2].substring(0, 1);
+            }
+
+        }
+        return roadGeneratorNumber;
+    }
+
+
 
     //TODO: 1. OBTENER TODA LA DATA.
     // 2: FILTRAR POR CARDINALIDAD "SUR" Y ELIMINAR LOS "ESTE".
