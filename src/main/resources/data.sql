@@ -1,6 +1,4 @@
-INSERT INTO Person (adress, phone) VALUES ('KR 68B 33 71 IN 5 AP 201', 14296569);
-INSERT INTO Person (adress, phone) VALUES ('KR 18D 68B 22 SUR', 17923852);
-
+INSERT INTO Person (adress, phone) VALUES ('KR 4G BIS ESTE 92 23 SUR', 12006222);
 INSERT INTO Person (adress, phone) VALUES ('CL 58 SUR 78J 02', 17801682);
 INSERT INTO Person (adress, phone) VALUES ('KR 29 1A 74 AP 301', 12370453);
 INSERT INTO Person (adress, phone) VALUES ('KR 7 32 89', 12452474);
@@ -9,6 +7,7 @@ INSERT INTO Person (adress, phone) VALUES ('CL 55A SUR 104 51 TO 8 AP 603', 1738
 INSERT INTO Person (adress, phone) VALUES ('AC 116 50 50 AP 504', 12139428);
 INSERT INTO Person (adress, phone) VALUES ('KR 7B 155 82 AP 301', 16682653);
 INSERT INTO Person (adress, phone) VALUES ('KR 7 245 60 CA 1', 16761613);
+INSERT INTO Person (adress, phone) VALUES ('KR 1 ESTE 52 12 SUR', 12052678);
 INSERT INTO Person (adress, phone) VALUES ('KR 17A 116 53 AP 203', 12139214);
 INSERT INTO Person (adress, phone) VALUES ('CL 12 SUR 24A 76 TO 8 AP 303', 12396808);
 INSERT INTO Person (adress, phone) VALUES ('CL 62D SUR 74 03 INT 9 AP 301', 17803321);
@@ -16,10 +15,14 @@ INSERT INTO Person (adress, phone) VALUES ('KR 74 138 69 TO 3 AP 1603', 16476722
 INSERT INTO Person (adress, phone) VALUES ('KR 63 165 11 CA 83', 16777405);
 INSERT INTO Person (adress, phone) VALUES ('CL 86A 69T 81 TO 4 AP 1202', 16400280);
 INSERT INTO Person (adress, phone) VALUES ('DG 762 70 AP 1004', 12114271);
+INSERT INTO Person (adress, phone) VALUES ('KR 1 ESTE 52 12 SUR', 12052678);
 INSERT INTO Person (adress, phone) VALUES ('KR 17A 116 53 AP 203', 12139214);
 INSERT INTO Person (adress, phone) VALUES ('CL 12 SUR 24A 76 TO 8 AP 303', 12396808);
 INSERT INTO Person (adress, phone) VALUES ('CL 62D SUR 74 03 INT 9 AP 301', 17803321);
+INSERT INTO Person (adress, phone) VALUES ('KR 6 ESTE 39 21 SUR', 12068533);
+INSERT INTO Person (adress, phone) VALUES ('CL 47A SUR 7 95 ESTE PI 3', 13659172);
 INSERT INTO Person (adress, phone) VALUES ('CL 228 89 AP 501', 12811210);
+INSERT INTO Person (adress, phone) VALUES ('CL 44 SUR 3 10 ESTE', 12063428);
 INSERT INTO Person (adress, phone) VALUES ('CL 69C 48 C47 SUR', 17183732);
 INSERT INTO Person (adress, phone) VALUES ('KR 93D6 37 MZ 7B TO 16 AP 502', 12099884);
 INSERT INTO Person (adress, phone) VALUES ('CL 158 94 OF 210', 12845846);
@@ -30,7 +33,7 @@ INSERT INTO Person (adress, phone) VALUES ('CL 25 68A 70 AP 211', 14273794);
 INSERT INTO Person (adress, phone) VALUES ('KR 90 147 44', 16853276);
 INSERT INTO Person (adress, phone) VALUES ('CL 53C SUR 72A 68', 17195890);
 INSERT INTO Person (adress, phone) VALUES ('CL 119 11B 33 AP 102', 12154664);
-
+INSERT INTO Person (adress, phone) VALUES ('KR 68B 33 71 IN 5 AP 201', 14296569);
 INSERT INTO Person (adress, phone) VALUES ('KR 47A 22A 93', 12684393);
 INSERT INTO Person (adress, phone) VALUES ('KR 4 70A 82 IN 6 AP 611', 13221738);
 INSERT INTO Person (adress, phone) VALUES ('TV 2 67 22 AP 708', 12128891);
@@ -39,6 +42,7 @@ INSERT INTO Person (adress, phone) VALUES ('CL 164 52 68', 16789561);
 INSERT INTO Person (adress, phone) VALUES ('AK 10 27 51 IN 159', 12861633);
 INSERT INTO Person (adress, phone) VALUES ('DG 44 SUR 23 40 BQ 6 AP 311', 17677652);
 INSERT INTO Person (adress, phone) VALUES ('KR 20C 64 24 SUR', 17318263);
+INSERT INTO Person (adress, phone) VALUES ('KR 6 ESTE 30 46 SUR IN 3', 13628951);
 INSERT INTO Person (adress, phone) VALUES ('CL 103A 19 35 AP 205', 12570968);
 INSERT INTO Person (adress, phone) VALUES ('CL 647 62 AP 202', 12555302);
 INSERT INTO Person (adress, phone) VALUES ('CL 142A 138A 60', 16937507);
@@ -58,25 +62,20 @@ INSERT INTO Person (adress, phone) VALUES ('KR 17 185B 14', 16682561);
 INSERT INTO Person (adress, phone) VALUES ('KR 5 75 93 AP 405', 16403091);
 INSERT INTO Person (adress, phone) VALUES ('CL 86A 69T 81 TO 4 AP 401', 16400575);
 INSERT INTO Person (adress, phone) VALUES ('CL 59 BIS 8 57 AP 301', 12178723);
+
 INSERT INTO Person (adress, phone) VALUES ('AK 11 116 70 AP 103', 12152107);
 INSERT INTO Person (adress, phone) VALUES ('KR 12B2 96 SUR', 12096199);
-
-
-
-
-
-
-
-
+INSERT INTO Person (adress, phone) VALUES ('KR 8 51 30 SUR', 12055376);
 INSERT INTO Person (adress, phone) VALUES ('CL 31A SUR 29B 65', 12024297);
 INSERT INTO Person (adress, phone) VALUES ('cl 131a 53 b 91 int 3 ap 302', 16279236);
 INSERT INTO Person (adress, phone) VALUES ('KR 7 17 01 OF 427', 12827503);
 INSERT INTO Person (adress, phone) VALUES ('DG 7A BIS C 76 11', 14242434);
+INSERT INTO Person (adress, phone) VALUES ('CL 37 SUR 12A 08 ESTE', 12069170);
 INSERT INTO Person (adress, phone) VALUES ('KR 94A 6C 59 TO 9 AP 304', 17332205);
 INSERT INTO Person (adress, phone) VALUES ('KR 69D 25 50 AP 517', 12959772);
 INSERT INTO Person (adress, phone) VALUES ('CL 8A 92 72 MZ 5 CN 126', 14487080);
 INSERT INTO Person (adress, phone) VALUES ('CL 23I BIS 93 20 TO 6 APT 404', 12943633);
-
+INSERT INTO Person (adress, phone) VALUES ('KR 18D 68B 22 SUR', 17923852);
 INSERT INTO Person (adress, phone) VALUES ('CL 151 7H 60 CA 14', 16264077);
 INSERT INTO Person (adress, phone) VALUES ('CL 29A SUR 25 09', 17273231);
 INSERT INTO Person (adress, phone) VALUES ('TV 3C 70B 45 SUR', 17670790);
