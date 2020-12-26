@@ -133,7 +133,7 @@ public class DataFilterService {
         try {
             Integer.parseInt(string);
             return true;
-        } catch (NumberFormatException nfe) {
+        } catch (NumberFormatException ex) {
             return false;
         }
     }
