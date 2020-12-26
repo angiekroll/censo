@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -20,7 +21,7 @@ public class DataFilterService {
         this.personRepository = personRepository;
     }
 
-    public List<Person> delegate(){
+    public List<Person> delegate() {
         List<Person> persons = getAllDataPerson();
         List<Person> personsCardinalPoint = validateCardinalPoint(persons);
         List<Person> personsFilter = validateAdress(personsCardinalPoint);
@@ -34,6 +35,7 @@ public class DataFilterService {
     public List<Person> validateCardinalPoint(List<Person> persons) {
         List<Person> personsFilter = new ArrayList<>();
         persons.stream().forEach(person -> {
+            // Pendiente quitar cardinalidad ESTE
             if (person.getAdress().contains(CardinalPoint.CARDINAL_POINT_SUR.getName()) ||
                     person.getAdress().contains(CardinalPoint.CARDINAL_POINT_SUR.getName().toLowerCase())) {
                 personsFilter.add(person);
@@ -43,39 +45,82 @@ public class DataFilterService {
     }
 
 
-    public List<Person> validateAdress(List<Person> persons){
+    public List<Person> validateAdress(List<Person> persons) {
         List<Person> personsFilter = new ArrayList<>();
-         persons.forEach(person -> {
+        persons.forEach(person -> {
             if (person.getAdress().contains(AddressAbbreviation.CL) ||
+                    person.getAdress().contains(AddressAbbreviation.CL.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.CLL) ||
+                    person.getAdress().contains(AddressAbbreviation.CLL.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.CALLE) ||
-                    person.getAdress().contains(AddressAbbreviation.AC)) {
+                    person.getAdress().contains(AddressAbbreviation.CALLE.toLowerCase()) ||
+                    person.getAdress().contains(AddressAbbreviation.AC) ||
+                    person.getAdress().contains(AddressAbbreviation.AC.toLowerCase())) {
 
-                String [] adress = person.getAdress().split(" ");
-                System.out.println("ASI DIVIDE LA DEIRECCION EN UN ARRAY");
-                System.out.println(adress);
-                //TODO: condicion de rango para calles
-                personsFilter.add(person);
+                // formato a la dirección eliminando caracteres especiales y palabra "sur"
+                String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
+                addressFormat = addressFormat.replaceAll("sur", "");
+                addressFormat = addressFormat.replaceAll("BIS", "");
+                addressFormat = addressFormat.replaceAll("bis", "");
+                addressFormat = addressFormat.replaceAll("#", "");
+                String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
+                String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
+                if (adressArrayFormat[1].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
+                    String mainRoadNumber = adressArrayFormat[1].substring(0, 2); // extrae solo los dos numeros y quita las letras en caso de que vengan
+                    if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
+                        String roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                        if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                            personsFilter.add(person);
+                        }
+                    }
+                }
             } else if (person.getAdress().contains(AddressAbbreviation.CR) ||
+                    person.getAdress().contains(AddressAbbreviation.CR.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.CRA) ||
+                    person.getAdress().contains(AddressAbbreviation.CRA.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.KR) ||
+                    person.getAdress().contains(AddressAbbreviation.KR.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.CARRERA) ||
-                    person.getAdress().contains(AddressAbbreviation.AK)) {
-                //TODO: condicion de rango para carreras
-                personsFilter.add(person);
-            }else{
-                personsFilter.add(person);
+                    person.getAdress().contains(AddressAbbreviation.CARRERA.toLowerCase()) ||
+                    person.getAdress().contains(AddressAbbreviation.AK) ||
+                    person.getAdress().contains(AddressAbbreviation.AK.toLowerCase())) {
+                // formato a la dirección eliminando caracteres especiales y palabra "sur"
+                String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
+                addressFormat = addressFormat.replaceAll("sur", "");
+                addressFormat = addressFormat.replaceAll("BIS", "");
+                addressFormat = addressFormat.replaceAll("bis", "");
+                addressFormat = addressFormat.replaceAll("#", "");
+                String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
+                String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
+                if (adressArrayFormat[1].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
+                    String mainRoadNumber = adressArrayFormat[1].substring(0, 2); // extrae solo los dos numeros y quita las letras en caso de que vengan
+                    String roadGeneratorNumber;
+                    if (Integer.parseInt(mainRoadNumber) >= 14 && Integer.parseInt(mainRoadNumber) <= 30) {  // valida el rango del territorio para calles
+                        roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                        if (Integer.parseInt(roadGeneratorNumber) >= 22 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                            personsFilter.add(person);
+                        }
+                    } else if (Integer.parseInt(mainRoadNumber) >= 12 && Integer.parseInt(mainRoadNumber) <= 30) {
+                        roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                        if (Integer.parseInt(roadGeneratorNumber) >= 27 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                            personsFilter.add(person);
+                        }
+                    }
+                }
+            } else {
+                //   personsFilter.add(person);
             }
         });
         return personsFilter;
     }
 
     //TODO: 1. OBTENER TODA LA DATA.
-    // 2: FILTRAR POR SUR.
-    // 3: ABREVIATURAS: CL, CLL, CALLE, AC
-    //                  CR, CRA, KR, CARRERA, AK
+    // 2: FILTRAR POR CARDINALIDAD SUR.
+    // 3: ABREVIATURAS: CL, CLL, CALLE, AC  --> CALLES
+    //                  CR, CRA, KR, CARRERA, AK   ---> CARRERAS
     //                  DG, AV, TV  --> INVESTIGACION DENTRO DEL TERRITORIO EN MAPS
     // https://www.rankia.co/blog/dian/4269251-nomenclatura-dian-2020   --> Nomenclatura DIAN 2020 – Direcciones
+    // CONDICIONES DE RANGOS TERRITORIO OLAYA
     // Carrera	>= Kr 12 D	<= Kr 30
     // Calle >= Cll 22 Sur	<= Cll 31 Sur
 
