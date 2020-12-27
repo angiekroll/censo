@@ -61,9 +61,7 @@ public class DataFilterService {
                     person.getAdress().contains(AddressAbbreviation.AC.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.DG) ||
                     person.getAdress().contains(AddressAbbreviation.DG.toLowerCase())) {
-                // TODO: agregar validacion si contiene 31 y una letra lo elimina esto solo para calles, y agregar validacion de 12D para carreras
-                // formato a la dirección eliminando caracteres especiales y palabra "sur"
-                String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
+                String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), ""); // formato a la dirección eliminando caracteres especiales y palabra "sur"
                 addressFormat = addressFormat.replaceAll("sur", "");
                 addressFormat = addressFormat.replaceAll("BIS", "");
                 addressFormat = addressFormat.replaceAll("bis", "");
@@ -72,11 +70,13 @@ public class DataFilterService {
                 String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
                 if (adressArrayFormat[1].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
                     String mainRoadNumber = validateMainRoadNumber(adressArrayFormat);
-                    String roadGeneratorNumber = validateRoadGeneratorNumber(adressArrayFormat);
-                    if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
-                     //   roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
-                        if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
-                            personsFilter.add(person);
+                    if (adressArrayFormat[1].length() < 3 || Integer.parseInt(mainRoadNumber) != 31){  /// para validar las calles 31 sin ninguna letra
+                        String roadGeneratorNumber = validateRoadGeneratorNumber(adressArrayFormat);
+                        if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
+                            //   roadGeneratorNumber = adressArrayFormat[2].substring(0, 2);
+                            if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                                personsFilter.add(person);
+                            }
                         }
                     }
                 }
@@ -92,6 +92,7 @@ public class DataFilterService {
                     person.getAdress().contains(AddressAbbreviation.AK.toLowerCase()) ||
                     person.getAdress().contains(AddressAbbreviation.TV) ||
                     person.getAdress().contains(AddressAbbreviation.TV.toLowerCase())) {
+                // TODO: agregar agregar validacion de 12D para carreras
                 // formato a la dirección eliminando caracteres especiales y palabra "sur"
                 String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
                 addressFormat = addressFormat.replaceAll("sur", "");
@@ -160,10 +161,20 @@ public class DataFilterService {
             } else {
                 roadGeneratorNumber = adressArrayFormat[2].substring(0, 1);
             }
-
         }
         return roadGeneratorNumber;
     }
+
+    public String validateCarera12D(String string){
+        if(Integer.parseInt(string) == 12){
+
+
+        }
+        return null;
+    }
+
+
+
 
 
 
