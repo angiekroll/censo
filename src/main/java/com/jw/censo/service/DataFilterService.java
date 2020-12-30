@@ -155,7 +155,7 @@ public class DataFilterService {
             case RoadNomenclature.CALLE:
                 if (addressArrayFormat[1].length() < 3 || Integer.parseInt(mainRoadNumber) != 31) {  /// para validar las calles 31 sin ninguna letra
                     if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
-                        if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                        if (Integer.parseInt(mainRoadNumber) >= 27 && Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior y teniendo encuenta que la carrera 12 solo aplica para la calle 27 en adelante
                             if (Integer.parseInt(roadGeneratorNumber) == 12 && addressArrayFormat[2].length() == 3) {
                                 char letra = addressArrayFormat[2].charAt(2);
                                 if (letra >= 'D') {  //validacion roadGeneratorNumber (carrera) 12D
@@ -168,7 +168,12 @@ public class DataFilterService {
                             } else {
                                 return false;
                             }
-
+                        } else if (Integer.parseInt(roadGeneratorNumber) >= 14 && Integer.parseInt(roadGeneratorNumber) <= 30) {
+                            if (addressArrayFormat[2].length() < 3 || Integer.parseInt(roadGeneratorNumber) != 30) { // valida que no pase la carrera 12 sola y adicional que la carrera 30 no venga con letras.
+                                return true;
+                            } else {
+                                return false;
+                            }
                         }
                     }
                 }
