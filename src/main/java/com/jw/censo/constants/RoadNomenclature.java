@@ -1,8 +1,8 @@
 package com.jw.censo.constants;
 
-public class AddressAbbreviation {
+public class RoadNomenclature {
 
-    private AddressAbbreviation() {
+    private RoadNomenclature() {
     }
 
     public static final String CL = "CL";

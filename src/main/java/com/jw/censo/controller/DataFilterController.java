@@ -1,6 +1,7 @@
 package com.jw.censo.controller;
 
 import com.jw.censo.model.Person;
+import com.jw.censo.model.PersonFilter;
 import com.jw.censo.service.DataFilterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

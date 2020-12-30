@@ -1,8 +1,10 @@
 package com.jw.censo.service;
 
-import com.jw.censo.constants.AddressAbbreviation;
+import com.jw.censo.constants.RoadNomenclature;
 import com.jw.censo.constants.CardinalPoint;
 import com.jw.censo.model.Person;
+import com.jw.censo.model.PersonFilter;
+import com.jw.censo.repository.PersonFilterRepository;
 import com.jw.censo.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,21 +17,29 @@ import java.util.List;
 public class DataFilterService {
 
     private final PersonRepository personRepository;
+    private final PersonFilterRepository personFilterRepository;
 
     @Autowired
-    public DataFilterService(PersonRepository personRepository) {
+    public DataFilterService(PersonRepository personRepository, PersonFilterRepository personFilterRepository) {
         this.personRepository = personRepository;
+        this.personFilterRepository = personFilterRepository;
     }
 
     public List<Person> delegate() {
-        List<Person> persons = getAllDataPerson();
+        List<Person> persons = getAllPerson();
         List<Person> personsCardinalPoint = validateCardinalPoint(persons);
-        List<Person> personsFilter = validateAdress(personsCardinalPoint);
-        return personsFilter;
+        List<Person> personsResul = validateRoadNomenclature(personsCardinalPoint);
+//        List<PersonFilter> personFilter = buildPersonFilter(personsResul);
+//        return savePersonFilter(personFilter);
+        return personsResul;
     }
 
-    public List<Person> getAllDataPerson() {
+    public List<Person> getAllPerson() {
         return personRepository.findAll();
+    }
+
+    public List<PersonFilter> savePersonFilter(List<PersonFilter> personFilter) {
+        return personFilterRepository.saveAll(personFilter);
     }
 
     public List<Person> validateCardinalPoint(List<Person> persons) {
@@ -48,79 +58,31 @@ public class DataFilterService {
     }
 
 
-    public List<Person> validateAdress(List<Person> persons) {
+    public List<Person> validateRoadNomenclature(List<Person> persons) {
         List<Person> personsFilter = new ArrayList<>();
         persons.forEach(person -> {
-            if (person.getAdress().contains(AddressAbbreviation.CL) ||
-                    person.getAdress().contains(AddressAbbreviation.CL.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.CLL) ||
-                    person.getAdress().contains(AddressAbbreviation.CLL.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.CALLE) ||
-                    person.getAdress().contains(AddressAbbreviation.CALLE.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.AC) ||
-                    person.getAdress().contains(AddressAbbreviation.AC.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.DG) ||
-                    person.getAdress().contains(AddressAbbreviation.DG.toLowerCase())) {
-                String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), ""); // formato a la dirección eliminando caracteres especiales y palabra "sur"
-                addressFormat = addressFormat.replaceAll("sur", "");
-                addressFormat = addressFormat.replaceAll("BIS", "");
-                addressFormat = addressFormat.replaceAll("bis", "");
-                addressFormat = addressFormat.replaceAll("#", "");
-                String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
-                String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
-                if (adressArrayFormat[1].length() <= 3 && adressArrayFormat[2].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
-                    String mainRoadNumber = validateMainRoadNumber(adressArrayFormat);
-                    if (adressArrayFormat[1].length() < 3 || Integer.parseInt(mainRoadNumber) != 31){  /// para validar las calles 31 sin ninguna letra
-                        String roadGeneratorNumber = validateRoadGeneratorNumber(adressArrayFormat);
-                        if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
-                            if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
-                                char letra = adressArrayFormat[2].charAt(2);
-                                if(letra >= 'D') {  //validacion roadGeneratorNumber (carrera) 12D
-                                    personsFilter.add(person);
-                                }
-                            }
-                        }
-                    }
+            String roadNomenclature = null;
+            String[] addressArrayFormat = formatAddress(person.getAdress());
+            if (addressArrayFormat[1].length() <= 3 && addressArrayFormat[2].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle o carrera
+                if (person.getAdress().contains(RoadNomenclature.CL) || person.getAdress().contains(RoadNomenclature.CL.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.CLL) || person.getAdress().contains(RoadNomenclature.CLL.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.CALLE) || person.getAdress().contains(RoadNomenclature.CALLE.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.AC) || person.getAdress().contains(RoadNomenclature.AC.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.DG) || person.getAdress().contains(RoadNomenclature.DG.toLowerCase())) {
+                    roadNomenclature = RoadNomenclature.CALLE;
+                } else if (person.getAdress().contains(RoadNomenclature.CR) || person.getAdress().contains(RoadNomenclature.CR.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.CRA) || person.getAdress().contains(RoadNomenclature.CRA.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.KR) || person.getAdress().contains(RoadNomenclature.KR.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.CARRERA) || person.getAdress().contains(RoadNomenclature.CARRERA.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.AK) || person.getAdress().contains(RoadNomenclature.AK.toLowerCase()) ||
+                        person.getAdress().contains(RoadNomenclature.TV) || person.getAdress().contains(RoadNomenclature.TV.toLowerCase())) {
+                    roadNomenclature = RoadNomenclature.CARRERA;
+                } else {
+                    // TODO: colocar exception INDICANDO QUE LA NOMENCLATURA VIAL NO EXISTE DENTRO E LAS PARAMETRIZADAS.
                 }
-            } else if (person.getAdress().contains(AddressAbbreviation.CR) ||
-                    person.getAdress().contains(AddressAbbreviation.CR.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.CRA) ||
-                    person.getAdress().contains(AddressAbbreviation.CRA.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.KR) ||
-                    person.getAdress().contains(AddressAbbreviation.KR.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.CARRERA) ||
-                    person.getAdress().contains(AddressAbbreviation.CARRERA.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.AK) ||
-                    person.getAdress().contains(AddressAbbreviation.AK.toLowerCase()) ||
-                    person.getAdress().contains(AddressAbbreviation.TV) ||
-                    person.getAdress().contains(AddressAbbreviation.TV.toLowerCase())) {
-                // TODO: agregar agregar validacion de 12D para carreras
-                // formato a la dirección eliminando caracteres especiales y palabra "sur"
-                String addressFormat = person.getAdress().replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
-                addressFormat = addressFormat.replaceAll("sur", "");
-                addressFormat = addressFormat.replaceAll("BIS", "");
-                addressFormat = addressFormat.replaceAll("bis", "");
-                addressFormat = addressFormat.replaceAll("#", "");
-                String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
-                String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
-                if (adressArrayFormat[1].length() <= 3 && adressArrayFormat[2].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle
-                    String mainRoadNumber = validateMainRoadNumber(adressArrayFormat);
-                    String roadGeneratorNumber = validateRoadGeneratorNumber(adressArrayFormat);
-                    if (Integer.parseInt(mainRoadNumber) >= 14 && Integer.parseInt(mainRoadNumber) <= 30) {  // valida el rango del territorio para calles
-                        if (Integer.parseInt(roadGeneratorNumber) >= 22 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
-                            personsFilter.add(person);
-                        }
-                    } else if (Integer.parseInt(mainRoadNumber) >= 12 && Integer.parseInt(mainRoadNumber) <= 30) {
-                        char letra = adressArrayFormat[1].charAt(2);
-                        if(letra >= 'D'){  //validacion roadmain (carrera) 12D
-                            if (Integer.parseInt(roadGeneratorNumber) >= 27 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
-                                personsFilter.add(person);
-                            }
-                        }
-                    }
+                if (validateResidentialNomenclature(roadNomenclature, addressArrayFormat)) {
+                    personsFilter.add(person);
                 }
-            } else {
-                //   personsFilter.add(person);
             }
         });
         return personsFilter;
@@ -137,7 +99,7 @@ public class DataFilterService {
     }
 
 
-    public String validateMainRoadNumber(String[] adressArrayFormat) {
+    public String getMainRoadNumber(String[] adressArrayFormat) {
         String mainRoadNumber;
         if (adressArrayFormat[1].length() == 1) {
             mainRoadNumber = adressArrayFormat[1].substring(0, 1);
@@ -154,7 +116,7 @@ public class DataFilterService {
     }
 
 
-    public String validateRoadGeneratorNumber(String[] adressArrayFormat) {
+    public String getRoadGeneratorNumber(String[] adressArrayFormat) {
         String roadGeneratorNumber;
         if (adressArrayFormat[2].length() == 1) {
             roadGeneratorNumber = adressArrayFormat[2].substring(0, 1);
@@ -168,6 +130,83 @@ public class DataFilterService {
         }
         return roadGeneratorNumber;
     }
+
+    public String[] formatAddress(String address) {
+        // formato a la dirección eliminando caracteres especiales y palabra "sur"
+        String addressFormat = address.replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
+        addressFormat = addressFormat.replaceAll("sur", "");
+        addressFormat = addressFormat.replaceAll("BIS", "");
+        addressFormat = addressFormat.replaceAll("bis", "");
+        addressFormat = addressFormat.replaceAll("#", "");
+        String[] adressArray = addressFormat.split(" "); // convierte la direccion en un array de string
+        String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
+        return adressArrayFormat;
+    }
+
+    public boolean validateResidentialNomenclature(String roadNomenclature, String[] addressArrayFormat) {
+        String mainRoadNumber = getMainRoadNumber(addressArrayFormat);
+        String roadGeneratorNumber = getRoadGeneratorNumber(addressArrayFormat);
+        switch (roadNomenclature) {
+            case RoadNomenclature.CALLE:
+                if (addressArrayFormat[1].length() < 3 || Integer.parseInt(mainRoadNumber) != 31) {  /// para validar las calles 31 sin ninguna letra
+                    if (Integer.parseInt(mainRoadNumber) >= 22 && Integer.parseInt(mainRoadNumber) <= 31) {  // valida el rango del territorio para calles
+                        if (Integer.parseInt(roadGeneratorNumber) >= 12 && Integer.parseInt(roadGeneratorNumber) <= 30) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                            if (Integer.parseInt(roadGeneratorNumber) == 12 && addressArrayFormat[2].length() == 3) {
+                                char letra = addressArrayFormat[2].charAt(2);
+                                if (letra >= 'D') {  //validacion roadGeneratorNumber (carrera) 12D
+                                    return true;
+                                }
+                            } else if (addressArrayFormat[2].length() < 3 || Integer.parseInt(roadGeneratorNumber) != 30) { // valida que no pase la carrera 12 sola y adicional que la carrera 30 no venga con letras.
+                                return true;
+                            } else {
+                                return false;
+                            }
+
+                        }
+                    }
+                }
+                break;
+
+            case RoadNomenclature.CARRERA:
+                if (Integer.parseInt(mainRoadNumber) >= 12 && Integer.parseInt(mainRoadNumber) <= 30) {
+                    if (Integer.parseInt(mainRoadNumber) == 12 && addressArrayFormat[1].length() == 3) {
+                        char letra = addressArrayFormat[1].charAt(2);
+                        if (letra >= 'D') {  //validacion roadmain (carrera) 12D
+                            if (addressArrayFormat[2].length() < 3 || Integer.parseInt(roadGeneratorNumber) != 31) {
+                                if (Integer.parseInt(roadGeneratorNumber) >= 27 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                                    return true;
+                                }
+                            }
+                        }
+                    } else if (Integer.parseInt(mainRoadNumber) == 13) {
+                        if (addressArrayFormat[2].length() < 3 || Integer.parseInt(roadGeneratorNumber) != 31) {
+                            if (Integer.parseInt(roadGeneratorNumber) >= 27 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                                return true;
+                            }
+                        }
+
+                    } else if (Integer.parseInt(mainRoadNumber) >= 14 && Integer.parseInt(mainRoadNumber) <= 30) {
+                        // valida el rango del territorio para calles
+                        if (addressArrayFormat[2].length() < 3 || Integer.parseInt(roadGeneratorNumber) != 31) {
+                            if (Integer.parseInt(roadGeneratorNumber) >= 22 && Integer.parseInt(roadGeneratorNumber) <= 31) { // valida el rango del territorio para carrera correspondiente a la calle anterior
+                                return true;
+                            }
+                        }
+                    }
+                } else {
+                    return false;
+                }
+                break;
+            default:
+                // TODO: COLOCAR UNA EXCEPCIÓN QUE INDIQUE NO EXISTE LA NOMENCLATURA VIAL PARAMETRIZADA EN EL SISTEMA.
+                throw new IllegalStateException("Unexpected value: " + roadNomenclature);
+        }
+        return false;
+    }
+
+//   public List<PersonFilter> buildPersonFilter(List<Person> personsResul){
+//        return null;
+//    }
 
 
     //TODO PROCESAMIENTO:
