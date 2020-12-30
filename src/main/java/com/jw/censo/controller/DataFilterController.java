@@ -25,7 +25,7 @@ public class DataFilterController {
 
     @GetMapping("test")
     public ResponseEntity<List<Person>> getLocationShip(){
-        return new ResponseEntity<>(dataFilterService.delegate(), HttpStatus.OK);
+        return new ResponseEntity<>(dataFilterService.PersonFilterDelegate(), HttpStatus.OK);
     }
 
 

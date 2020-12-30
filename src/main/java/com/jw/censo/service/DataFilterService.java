@@ -25,22 +25,32 @@ public class DataFilterService {
         this.personFilterRepository = personFilterRepository;
     }
 
-    public List<Person> delegate() {
+    public List<Person> PersonFilterDelegate() {
+        List<Person> personsFilter = new ArrayList<>();
         List<Person> persons = getAllPerson();
         List<Person> personsCardinalPoint = validateCardinalPoint(persons);
-        List<Person> personsResul = validateRoadNomenclature(personsCardinalPoint);
+        personsCardinalPoint.forEach(personCardinalPoint -> {
+            String[] addressArrayFormat = formatAddress(personCardinalPoint.getAdress());
+            String roadNomenclature = validateRoadNomenclature(addressArrayFormat, personCardinalPoint);
+            if (validateResidentialNomenclature(roadNomenclature, addressArrayFormat)) {
+                personsFilter.add(personCardinalPoint);
+            }
+        });
+        return personsFilter;
 //        List<PersonFilter> personFilter = buildPersonFilter(personsResul);
 //        return savePersonFilter(personFilter);
-        return personsResul;
     }
+
 
     public List<Person> getAllPerson() {
         return personRepository.findAll();
     }
 
+
     public List<PersonFilter> savePersonFilter(List<PersonFilter> personFilter) {
         return personFilterRepository.saveAll(personFilter);
     }
+
 
     public List<Person> validateCardinalPoint(List<Person> persons) {
         List<Person> personsFilter = new ArrayList<>();
@@ -58,34 +68,27 @@ public class DataFilterService {
     }
 
 
-    public List<Person> validateRoadNomenclature(List<Person> persons) {
-        List<Person> personsFilter = new ArrayList<>();
-        persons.forEach(person -> {
-            String roadNomenclature = null;
-            String[] addressArrayFormat = formatAddress(person.getAdress());
-            if (addressArrayFormat[1].length() <= 3 && addressArrayFormat[2].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle o carrera
-                if (person.getAdress().contains(RoadNomenclature.CL) || person.getAdress().contains(RoadNomenclature.CL.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.CLL) || person.getAdress().contains(RoadNomenclature.CLL.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.CALLE) || person.getAdress().contains(RoadNomenclature.CALLE.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.AC) || person.getAdress().contains(RoadNomenclature.AC.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.DG) || person.getAdress().contains(RoadNomenclature.DG.toLowerCase())) {
-                    roadNomenclature = RoadNomenclature.CALLE;
-                } else if (person.getAdress().contains(RoadNomenclature.CR) || person.getAdress().contains(RoadNomenclature.CR.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.CRA) || person.getAdress().contains(RoadNomenclature.CRA.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.KR) || person.getAdress().contains(RoadNomenclature.KR.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.CARRERA) || person.getAdress().contains(RoadNomenclature.CARRERA.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.AK) || person.getAdress().contains(RoadNomenclature.AK.toLowerCase()) ||
-                        person.getAdress().contains(RoadNomenclature.TV) || person.getAdress().contains(RoadNomenclature.TV.toLowerCase())) {
-                    roadNomenclature = RoadNomenclature.CARRERA;
-                } else {
-                    // TODO: colocar exception INDICANDO QUE LA NOMENCLATURA VIAL NO EXISTE DENTRO E LAS PARAMETRIZADAS.
-                }
-                if (validateResidentialNomenclature(roadNomenclature, addressArrayFormat)) {
-                    personsFilter.add(person);
-                }
+    public String validateRoadNomenclature(String[] addressArrayFormat, Person person) {
+        String roadNomenclature = null;
+        if (addressArrayFormat[1].length() <= 3 && addressArrayFormat[2].length() <= 3) {  // valida que no vengan mas de tres caracteres en el numero de la calle o carrera
+            if (person.getAdress().contains(RoadNomenclature.CL) || person.getAdress().contains(RoadNomenclature.CL.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.CLL) || person.getAdress().contains(RoadNomenclature.CLL.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.CALLE) || person.getAdress().contains(RoadNomenclature.CALLE.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.AC) || person.getAdress().contains(RoadNomenclature.AC.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.DG) || person.getAdress().contains(RoadNomenclature.DG.toLowerCase())) {
+                roadNomenclature = RoadNomenclature.CALLE;
+            } else if (person.getAdress().contains(RoadNomenclature.CR) || person.getAdress().contains(RoadNomenclature.CR.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.CRA) || person.getAdress().contains(RoadNomenclature.CRA.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.KR) || person.getAdress().contains(RoadNomenclature.KR.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.CARRERA) || person.getAdress().contains(RoadNomenclature.CARRERA.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.AK) || person.getAdress().contains(RoadNomenclature.AK.toLowerCase()) ||
+                    person.getAdress().contains(RoadNomenclature.TV) || person.getAdress().contains(RoadNomenclature.TV.toLowerCase())) {
+                roadNomenclature = RoadNomenclature.CARRERA;
+            } else {
+                // TODO: colocar exception INDICANDO QUE LA NOMENCLATURA VIAL NO EXISTE DENTRO E LAS PARAMETRIZADAS.
             }
-        });
-        return personsFilter;
+        }
+        return roadNomenclature;
     }
 
 
@@ -131,6 +134,7 @@ public class DataFilterService {
         return roadGeneratorNumber;
     }
 
+
     public String[] formatAddress(String address) {
         // formato a la dirección eliminando caracteres especiales y palabra "sur"
         String addressFormat = address.replaceAll(CardinalPoint.CARDINAL_POINT_SUR.getName(), "");
@@ -142,6 +146,7 @@ public class DataFilterService {
         String[] adressArrayFormat = Arrays.stream(adressArray).filter(chart -> !chart.isEmpty()).toArray(String[]::new); // genera nuevo array eliminando posiciones vacias
         return adressArrayFormat;
     }
+
 
     public boolean validateResidentialNomenclature(String roadNomenclature, String[] addressArrayFormat) {
         String mainRoadNumber = getMainRoadNumber(addressArrayFormat);
@@ -156,7 +161,9 @@ public class DataFilterService {
                                 if (letra >= 'D') {  //validacion roadGeneratorNumber (carrera) 12D
                                     return true;
                                 }
-                            } else if (addressArrayFormat[2].length() < 3 || Integer.parseInt(roadGeneratorNumber) != 30) { // valida que no pase la carrera 12 sola y adicional que la carrera 30 no venga con letras.
+                            } else if (Integer.parseInt(roadGeneratorNumber) != 12 &&
+                                    (addressArrayFormat[2].length() < 3 ||
+                                            Integer.parseInt(roadGeneratorNumber) != 30)) { // valida que no pase la carrera 12 sola y adicional que la carrera 30 no venga con letras.
                                 return true;
                             } else {
                                 return false;
