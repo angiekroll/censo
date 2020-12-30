@@ -24,3 +24,9 @@ spring:
       enabled: true
       path: /h2
 
+logging:
+  level:
+    com:
+      jw:
+        censo: DEBUG
+

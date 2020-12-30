@@ -1,19 +1,22 @@
 package com.jw.censo.service;
 
-import com.jw.censo.constants.RoadNomenclature;
 import com.jw.censo.constants.CardinalPoint;
+import com.jw.censo.constants.RoadNomenclature;
 import com.jw.censo.model.Person;
 import com.jw.censo.model.PersonFilter;
 import com.jw.censo.repository.PersonFilterRepository;
 import com.jw.censo.repository.PersonRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Slf4j
 public class DataFilterService {
 
     private final PersonRepository personRepository;
@@ -34,11 +37,11 @@ public class DataFilterService {
             String roadNomenclature = validateRoadNomenclature(addressArrayFormat, personCardinalPoint);
             if (validateResidentialNomenclature(roadNomenclature, addressArrayFormat)) {
                 personsFilter.add(personCardinalPoint);
+                PersonFilter personFilter = buildPersonFilter(personCardinalPoint);
+                savePersonFilter(personFilter);
             }
         });
         return personsFilter;
-//        List<PersonFilter> personFilter = buildPersonFilter(personsResul);
-//        return savePersonFilter(personFilter);
     }
 
 
@@ -47,8 +50,13 @@ public class DataFilterService {
     }
 
 
-    public List<PersonFilter> savePersonFilter(List<PersonFilter> personFilter) {
-        return personFilterRepository.saveAll(personFilter);
+    public void savePersonFilter(PersonFilter personFilter) {
+        try {
+            personFilterRepository.save(personFilter);
+        } catch (Throwable ex) {
+            log.info("[---------------------> phone: {}] Error when trying to insert the phone number, duplicate number.",
+                    personFilter.getPhone());
+        }
     }
 
 
@@ -216,9 +224,14 @@ public class DataFilterService {
         return false;
     }
 
-//   public List<PersonFilter> buildPersonFilter(List<Person> personsResul){
-//        return null;
-//    }
+    public PersonFilter buildPersonFilter(Person personCardinalPoint) {
+        PersonFilter personFilter = new PersonFilter();
+        personFilter.setAddress(personCardinalPoint.getAdress());
+        personFilter.setPhone(personCardinalPoint.getPhone());
+        personFilter.setState("N");
+        personFilter.setDate(LocalDateTime.now());
+        return personFilter;
+    }
 
 
     //TODO PROCESAMIENTO:
