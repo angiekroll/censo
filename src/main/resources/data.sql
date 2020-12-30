@@ -3,9 +3,6 @@ INSERT INTO Person (adress,	 phone) VALUES ('KR 12 SUR 28D 12'	,	14400170);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12D SUR 27D 11'	,	14400171);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12C SUR 29D 10'	,	14400172);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12E SUR 29D 9'	,	14400173);
-INSERT INTO Person (adress,	 phone) VALUES ('KR 12E SUR 29D 9'	,	14400173);
-
-
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12F SUR 30 11'	,	14400174);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12F SUR 30A 11'	,	14400175);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12G SUR 3 11'	,	14400176);
@@ -43,9 +40,6 @@ INSERT INTO Person (adress,	 phone) VALUES ('KR 14 SUR 21 11'	,	14400207);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12D SUR 31A 11'	,	14400208);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 12D SUR 26 11'	,	14400209);
 INSERT INTO Person (adress,	 phone) VALUES ('CLL 28 SUR 12D 15'	,	14400210);
-INSERT INTO Person (adress,	 phone) VALUES ('CLL 28 SUR 12D 15'	,	14400210);
-
-
 INSERT INTO Person (adress,	 phone) VALUES ('CLL 28 SUR 12C 15'	,	14400211);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 117A 63D 12'	,	14400212);
 INSERT INTO Person (adress,	 phone) VALUES ('KR 64 75 13'	,	14400213);

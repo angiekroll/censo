@@ -253,11 +253,18 @@ public class DataFilterService {
 
 
     //TODO PENDIENTE:
-    // Guardar el resultado en DB con un estado de migrado.
     // Cambiad DB no volatil
     // Cambiar por address
     // reorganizar código
     // validar quitar el indicativo
+
+    //Todo: VENTAJAS:
+    // 1. Evita la duplicidad de datos
+    // 2. la validacion de direcciones se hace automaticamente. (se evita el estar preguntando o validando direcciones
+    // sobretodo hermanos de avanzada edad)
+    // 3. Reduce el tiempo del censo.
+    // 4. Se tienen los registros en una BD gestionada para mayor facilidad de busquedas.
+
 
 
 }
